@@ -1,0 +1,60 @@
+---
+title: "Almond Yield as a Function"
+author: "Kristin Gill"
+date: "4/8/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(here)
+library(lubridate)
+```
+
+```{r}
+almond_climate_original <- read.table(here("data", "clim.txt")) %>% 
+  clean_names()
+
+almond_climate <- almond_climate_original %>% 
+  mutate(precip = precip*25.4) %>% 
+  mutate(date = as_date(d)) %>% 
+  mutate(year = year(date)) %>%
+  mutate(month = month(date)) %>%
+  filter(month == c(1,2)) %>% 
+  group_by(year, month) %>% 
+  summarize(mean_max = mean(tmax_c), mean_min = mean(tmin_c), mean_p = mean(precip))
+
+# temp in february
+almond_temp <- almond_climate %>% 
+  filter(month == 2) %>% 
+  select(year, mean_max, mean_min)
+
+# precip in january
+almond_precip <- almond_climate %>% 
+  filter(month == 1) %>% 
+  select(year, mean_p)
+```
+
+```{r}
+source(here("R", "almond_yield.R"))
+
+yield <- almond_yield(year = almond_temp$year, p = almond_precip$mean_p, Tn = almond_temp$mean_min)
+```
+
+
+calculate the almond yield anomaly for each year, and summarize the data. We will leave how to summarize the data up to you. 
+
+Think about what metrics would be best to explain the trends in outputs. Tables, graphs, and summary metrics are all acceptable – these you will generate outside the function in your Rmarkdown. Make sure to include axis labels, units and captions.
+
+Finally, write one paragraph summarizing your findings. Submit pdf of rmarkdown.and the function.R file to gauchospace – Submit as a group
+
+Three answers to check your model against:
+
+2000: 9.59
+
+2001: 159.51
+
+2002: 0.24
+
