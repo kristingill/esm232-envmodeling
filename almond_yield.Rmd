@@ -43,6 +43,13 @@ source(here("R", "almond_yield.R"))
 yield <- almond_yield(year = almond_temp$year, p = almond_precip$sum_p, Tn = almond_temp$mean_min)
 ```
 
+```{r}
+#Use graph to show the trend of how almond yield changes across years
+
+ggplot(data = yield, aes(x = year, y = almond_yield)) +
+  geom_bar(stat = "identity")
+```
+
 
 calculate the almond yield anomaly for each year, and summarize the data. We will leave how to summarize the data up to you. 
 
