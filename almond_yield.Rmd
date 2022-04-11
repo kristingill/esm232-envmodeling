@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(janitor)
 library(here)
@@ -18,29 +18,29 @@ almond_climate_original <- read.table(here("data", "clim.txt")) %>%
   clean_names()
 
 almond_climate <- almond_climate_original %>% 
-  mutate(precip = precip*25.4) %>% 
   mutate(date = as_date(d)) %>% 
   mutate(year = year(date)) %>%
-  mutate(month = month(date)) %>%
-  filter(month == c(1,2)) %>% 
-  group_by(year, month) %>% 
-  summarize(mean_max = mean(tmax_c), mean_min = mean(tmin_c), mean_p = mean(precip))
+  mutate(month = month(date))
 
 # temp in february
 almond_temp <- almond_climate %>% 
   filter(month == 2) %>% 
-  select(year, mean_max, mean_min)
+  group_by(year) %>%
+  summarize(mean_min = mean(tmin_c)) %>% 
+  select(year, mean_min)
 
 # precip in january
 almond_precip <- almond_climate %>% 
   filter(month == 1) %>% 
-  select(year, mean_p)
+  group_by(year) %>% 
+  summarize(mean_p = mean(precip), sum_p = sum(precip)) %>% 
+  select(year, sum_p)
 ```
 
 ```{r}
 source(here("R", "almond_yield.R"))
 
-yield <- almond_yield(year = almond_temp$year, p = almond_precip$mean_p, Tn = almond_temp$mean_min)
+yield <- almond_yield(year = almond_temp$year, p = almond_precip$sum_p, Tn = almond_temp$mean_min)
 ```
 
 
