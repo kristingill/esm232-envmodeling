@@ -60,6 +60,36 @@ plot_precipitation <- ggplot(data = almond_precip, aes(x = year, y = sum_p)) +
 
 plot_yield/plot_precipitation/plot_temperature
 ```
+```{r}
+# largest anomalies
+
+yield %>% 
+  filter(almond_yield > 500)
+```
+
+```{r}
+all_data <- left_join(yield, almond_precip, by = "year")
+all_data <- left_join(all_data, almond_temp, by = "year")
+
+ggplot(all_data, aes(y = almond_yield, x = sum_p)) +
+  geom_point() +
+  labs(title = "Yield vs. Precipitation",
+       y = "Almond Yield (tons/acre)",
+       x = "January Precipitation (mm)")
+
+ggplot(all_data, aes(y = almond_yield, x = mean_min)) +
+  geom_point() +
+  labs(title = "Yield vs. Temperature",
+       y = "Almond Yield (tons/acre)",
+       x = "Minimum February Temperature (C)")
+```
+
+
+
+Summary paragraph: 
+
+Based on these findings, 1995 was the year with the highest yield anomaly of 1919.981 tons/acre. 2005 and 2008 had the next largest anomalies, with 656.37 tons/acre and 576.28 tons/acre, respectively. Looking at the trends in anomalies compared with the trends in temperature and precipitation, it appears that the yield anomalies are highly correlated with variations in precipitation. This is further confirmed by plotting yield anomaly against January precipitation and minimum February temperature. There seems to be a strong relationship between almond yield anomaly and January precipitation, whereas there is no clear relationship between almond yield anomaly and minimum February temperature.
+
 
 
 calculate the almond yield anomaly for each year, and summarize the data. We will leave how to summarize the data up to you. 
