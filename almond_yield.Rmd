@@ -11,6 +11,7 @@ library(tidyverse)
 library(janitor)
 library(here)
 library(lubridate)
+library(patchwork)
 ```
 
 ```{r}
@@ -45,9 +46,19 @@ yield <- almond_yield(year = almond_temp$year, p = almond_precip$sum_p, Tn = alm
 
 ```{r}
 #Use graph to show the trend of how almond yield changes across years
+plot_yield <- ggplot(data = yield, aes(x = year, y = almond_yield)) +
+  geom_line() +
+  labs(title = "Estimated Almond Yields (tons/acre)", x = "Year", y = "Almond Yield")
 
-ggplot(data = yield, aes(x = year, y = almond_yield)) +
-  geom_bar(stat = "identity")
+plot_temperature <- ggplot(data = almond_temp, aes(x = year, y = mean_min)) +
+  geom_line() +
+  labs(title = "February Mean Minimum Tempratures (°C)", x = "Year", y = "Mean Min Temp")
+
+plot_precipitation <- ggplot(data = almond_precip, aes(x = year, y = sum_p)) +
+  geom_line() +
+  labs(title = "January Precipitation (mm)", x = "Year", y = "Precipitation")
+
+plot_yield/plot_precipitation/plot_temperature
 ```
 
 
