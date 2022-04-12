@@ -1,8 +1,11 @@
 ---
 title: "Almond Yield as a Function"
-author: "Kristin Gill"
-date: "4/8/2022"
-output: html_document
+author: "Kristin Gill, Yutian Fang, Grace Lewin"
+date: "4/11/2022"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -13,6 +16,8 @@ library(here)
 library(lubridate)
 library(patchwork)
 ```
+
+# Import and subset climate data
 
 ```{r}
 almond_climate_original <- read.table(here("data", "clim.txt")) %>% 
@@ -38,25 +43,29 @@ almond_precip <- almond_climate %>%
   select(year, sum_p)
 ```
 
+# Import and execute function to estimate almond yield anomalies
+
 ```{r}
 source(here("R", "almond_yield.R"))
 
 yield <- almond_yield(year = almond_temp$year, p = almond_precip$sum_p, Tn = almond_temp$mean_min)
 ```
 
-```{r}
+# Summary figures
+
+```{r, fig.cap="Almond yield anomaly plotted with graphs of January precipitation and minimum February temperatures. We can see that the anomaly is correlated with changes in the January precipitation."}
 #Use graph to show the trend of how almond yield changes across years
 plot_yield <- ggplot(data = yield, aes(x = year, y = almond_yield)) +
   geom_line() +
-  labs(title = "Estimated Almond Yields (tons/acre)", x = "Year", y = "Almond Yield")
+  labs(title = "Estimated Almond Yields Anomaly", x = "Year", y = "Almond Yield \nAnomaly \n(tons/acre)")
 
 plot_temperature <- ggplot(data = almond_temp, aes(x = year, y = mean_min)) +
   geom_line() +
-  labs(title = "February Mean Minimum Tempratures (°C)", x = "Year", y = "Mean Min Temp")
+  labs(title = "February Mean Minimum Tempratures", x = "Year", y = "Mean Min \nTemp (°C)")
 
 plot_precipitation <- ggplot(data = almond_precip, aes(x = year, y = sum_p)) +
   geom_line() +
-  labs(title = "January Precipitation (mm)", x = "Year", y = "Precipitation")
+  labs(title = "January Precipitation", x = "Year", y = "Precipitation \n(mm)")
 
 plot_yield/plot_precipitation/plot_temperature
 ```
@@ -67,16 +76,18 @@ yield %>%
   filter(almond_yield > 500)
 ```
 
-```{r}
+```{r, fig.cap="There is a strong relationship between the almond yield anomaly and January precipitation."}
 all_data <- left_join(yield, almond_precip, by = "year")
 all_data <- left_join(all_data, almond_temp, by = "year")
 
 ggplot(all_data, aes(y = almond_yield, x = sum_p)) +
   geom_point() +
   labs(title = "Yield vs. Precipitation",
-       y = "Almond Yield (tons/acre)",
+       y = "Almond Yield Anomaly (tons/acre)",
        x = "January Precipitation (mm)")
+```
 
+```{r, fig.cap="This figure does not show a relationship between almond yield anomaly and minimum Febrary temperature."}
 ggplot(all_data, aes(y = almond_yield, x = mean_min)) +
   geom_point() +
   labs(title = "Yield vs. Temperature",
@@ -86,23 +97,8 @@ ggplot(all_data, aes(y = almond_yield, x = mean_min)) +
 
 
 
-Summary paragraph: 
+
+# Summary paragraph
 
 Based on these findings, 1995 was the year with the highest yield anomaly of 1919.981 tons/acre. 2005 and 2008 had the next largest anomalies, with 656.37 tons/acre and 576.28 tons/acre, respectively. Looking at the trends in anomalies compared with the trends in temperature and precipitation, it appears that the yield anomalies are highly correlated with variations in precipitation. This is further confirmed by plotting yield anomaly against January precipitation and minimum February temperature. There seems to be a strong relationship between almond yield anomaly and January precipitation, whereas there is no clear relationship between almond yield anomaly and minimum February temperature.
-
-
-
-calculate the almond yield anomaly for each year, and summarize the data. We will leave how to summarize the data up to you. 
-
-Think about what metrics would be best to explain the trends in outputs. Tables, graphs, and summary metrics are all acceptable – these you will generate outside the function in your Rmarkdown. Make sure to include axis labels, units and captions.
-
-Finally, write one paragraph summarizing your findings. Submit pdf of rmarkdown.and the function.R file to gauchospace – Submit as a group
-
-Three answers to check your model against:
-
-2000: 9.59
-
-2001: 159.51
-
-2002: 0.24
 
