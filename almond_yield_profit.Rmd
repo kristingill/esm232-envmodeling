@@ -60,4 +60,13 @@ acres <- 1000
 profit <- compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=price, discount=0.12, acres=acres)
 ```
 
+#Sensitivity Analysis
+```{r}
+
+```
+
 # Summary figures
+```{r}
+
+```
+
