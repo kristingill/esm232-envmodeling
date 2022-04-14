@@ -1,0 +1,63 @@
+---
+title: "Almond Yield Profit"
+author: "Kristin Gill, Yutian Fang, Grace Lewin"
+date: "4/14/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(janitor)
+library(here)
+library(lubridate)
+library(patchwork)
+```
+
+# Import and subset climate data
+
+```{r}
+almond_climate_original <- read.table(here("data", "clim.txt")) %>% 
+  clean_names()
+
+almond_climate <- almond_climate_original %>% 
+  mutate(date = as_date(d)) %>% 
+  mutate(year = year(date)) %>%
+  mutate(month = month(date))
+
+# temp in february
+almond_temp <- almond_climate %>% 
+  filter(month == 2) %>% 
+  group_by(year) %>%
+  summarize(mean_min = mean(tmin_c)) %>% 
+  select(year, mean_min)
+
+# precip in january
+almond_precip <- almond_climate %>% 
+  filter(month == 1) %>% 
+  group_by(year) %>% 
+  summarize(mean_p = mean(precip), sum_p = sum(precip)) %>% 
+  select(year, sum_p)
+```
+
+# Import and execute function to estimate almond yield anomalies
+
+```{r}
+source(here("R", "almond_yield.R"))
+
+yield <- almond_yield(year = almond_temp$year, p = almond_precip$sum_p, Tn = almond_temp$mean_min)
+```
+
+# Profit
+```{r}
+source(here("R", "compute_NPV.R"))
+source(here("R", "almond_profit.R"))
+
+price <- 50
+
+acres <- 1000
+
+profit <- compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=price, discount=0.12, acres=acres)
+```
+
+# Summary figures
