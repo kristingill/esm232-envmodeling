@@ -62,6 +62,23 @@ profit <- compute_profit_almond(yield = yield$almond_yield, year=yield$year, pri
 
 #Sensitivity Analysis
 ```{r}
+#here's a start to something...not sure if it's quite right though
+deviation = 0.15
+base_price = 50
+
+price = runif(min = base_price-deviation*base_price,
+              max = base_price+deviation*base_price, 
+              n = 20)
+
+profit2 = price %>% 
+  map(~compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=.x, discount=0.12, acres=acres))
+
+profit2[[1]]
+
+#when we vary 2 parameters we can bind them together here
+#parms = cbind.data.frame(price)
+
+
 
 ```
 
