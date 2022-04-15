@@ -9,13 +9,14 @@
 #' @author Yutian Fang, Kristin Gill, and Grace Lewin
 #' @return almond profit ($)
 
-compute_profit_almond = function(yield, year, price, discount=0.12, acres) {
+compute_profit_almond = function(yield, year, price, discount=0.12, acres, base_almonds) {
   
   scen = seq(from=1, to=length(yield))
   
-  yearprofit <- data.frame(scen=scen, yield=yield, year=year)
+  yearprofit <- data.frame(scen=scen, yield=yield, year=year, base_almonds=base_almonds) %>% 
+    mutate(total_almonds = base_almonds + yield)
   
-  yearprofit$net <-  yearprofit$yield*price
+  yearprofit$net <-  yearprofit$total_almonds*price
   
   Yearprofit <- yearprofit %>% 
     mutate(netpre = compute_NPV(value=net, time=year-year[1], discount=discount ))

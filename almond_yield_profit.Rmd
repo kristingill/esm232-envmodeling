@@ -57,23 +57,36 @@ price <- 50
 
 acres <- 1000
 
-profit <- compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=price, discount=0.12, acres=acres)
+base_almonds <- 2000
+
+profit <- compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=price, discount=0.12, acres=acres, base_almonds=base_almonds)
 ```
 
 #Sensitivity Analysis
 ```{r}
 #here's a start to something...not sure if it's quite right though
+
 deviation = 0.15
 base_price = 50
+base_acres = 1000
 
 price = runif(min = base_price-deviation*base_price,
               max = base_price+deviation*base_price, 
               n = 20)
 
-profit2 = price %>% 
-  map(~compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=.x, discount=0.12, acres=acres))
+acres = runif(min = base_acres-deviation*base_acres,
+              max = base_acres+deviation*base_acres, 
+              n = 20)
 
-profit2[[1]]
+parameters = cbind.data.frame(price, acres)
+
+profit_sensitivity = parameters %>% 
+  pmap(~compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=.x, discount=0.12, acres=acres, base_almonds=base_almonds))
+
+profit_almonds = map_df(profit_sensitivity,`[`, c("net", "year")) 
+
+profit_almonds_df = data.frame(year = profit_almonds$year, 
+                     net= profit_almonds$net)
 
 #when we vary 2 parameters we can bind them together here
 #parms = cbind.data.frame(price)
@@ -84,6 +97,11 @@ profit2[[1]]
 
 # Summary figures
 ```{r}
-
+# now we could plot
+ggplot(profit_almonds_df, 
+       aes(as.factor(year), net, group=year))+
+  geom_boxplot() +
+  theme_minimal() +
+  labs(x = "Profit", y = "Years")
 ```
 
