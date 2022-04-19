@@ -1,7 +1,7 @@
 ---
 title: "Almond Yield Profit"
 author: "Kristin Gill, Yutian Fang, Grace Lewin"
-date: "4/14/2022"
+date: "4/19/2022"
 output: html_document
 ---
 
@@ -64,8 +64,6 @@ profit <- compute_profit_almond(yield = yield$almond_yield, year=yield$year, pri
 
 #Sensitivity Analysis
 ```{r}
-#here's a start to something...not sure if it's quite right though
-
 deviation = 0.15
 base_price = 50
 base_acres = 1000
@@ -88,16 +86,10 @@ profit_sensitivity = parameters %>%
 profit_almonds = map_df(profit_sensitivity,`[`, "total") 
 
 total_profit = cbind.data.frame(profit_almonds, parameters)
-
-#when we vary 2 parameters we can bind them together here
-#parms = cbind.data.frame(price)
-
-
-
 ```
 
 # Summary figures
-```{r}
+```{r, fig.cap="Relationships between the parameters price and almond acres on total profits. From these figures we can see that the number of acres of almonds has the strongest relationship with the total profits."}
 # now we could plot
 #ggplot(total_profit, 
  #      aes(as.factor(year), net, group=year))+
@@ -108,13 +100,17 @@ total_profit = cbind.data.frame(profit_almonds, parameters)
 #Make scatter plots comparison
 p1 = ggplot(total_profit, aes(price, total, col=acres)) +
   geom_point(cex=2) +
-  labs(y="Mean Annual Profits", x="Annual Price") +
-  theme_minimal()
+  labs(y="Total Annual Profits ($)", x="Almond Acres",
+       title = "Relationship Between \nProfit and Acres of Almonds") +
+  theme_minimal() +
+  scale_color_gradient(low="lightblue", high="darkblue")
 
 p2 = ggplot(total_profit, aes(acres, total, col=price)) +
   geom_point(cex=2) +
-  labs(y="Mean Annual Profits", x="Almond Acres") +
-  theme_minimal()
+  labs(y="Total Annual Profits ($)", x="Price ($)",
+       title = "Relationship Between \nProfit and Price of Almonds") +
+  theme_minimal()+
+  scale_color_gradient(low="lightblue", high="darkblue")
 
 p1|p2
 ```
