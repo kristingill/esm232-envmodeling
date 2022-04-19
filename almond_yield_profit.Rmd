@@ -95,17 +95,20 @@ total_profit = cbind.data.frame(profit_almonds, parameters)
 p1 = ggplot(total_profit, aes(price, total, col=acres)) +
   geom_point(cex=2) +
   labs(y="Total Annual Profits ($)", x="Almond Acres",
-       title = "Relationship Between \nProfit and Acres of Almonds") +
+       title = "Relationship Between \nProfit and Acres of Almonds",
+       color = "Acres") +
   theme_minimal() +
   scale_color_gradient(low="lightblue", high="darkblue")
 
 p2 = ggplot(total_profit, aes(acres, total, col=price)) +
   geom_point(cex=2) +
   labs(y="Total Annual Profits ($)", x="Price ($)",
-       title = "Relationship Between \nProfit and Price of Almonds") +
+       title = "Relationship Between \nProfit and Price of Almonds",
+       color = "Price ($)") +
   theme_minimal()+
   scale_color_gradient(low="lightblue", high="darkblue")
 
 p1|p2
 ```
+
 
