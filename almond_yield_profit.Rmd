@@ -12,7 +12,6 @@ library(janitor)
 library(here)
 library(lubridate)
 library(patchwork)
-library(ggarrange)
 ```
 
 # Import and subset climate data
@@ -84,14 +83,11 @@ parameters = cbind.data.frame(price, acres)
 profit_sensitivity = parameters %>% 
   pmap(~compute_profit_almond(yield = yield$almond_yield, year=yield$year, price=.x, discount=0.12, acres=acres, base_almonds=base_almonds))
 
-profit_almonds = map_df(profit_sensitivity,`[`, c("net", "year")) 
 
-profit_almonds_df = data.frame(year = profit_almonds$year, 
-                     net= profit_almonds$net)
 
-profit_almonds_df_final <- profit_almonds_df %>%
-  group_by(year) %>%
-  summarise(mean_netprofit = mean(net))
+profit_almonds = map_df(profit_sensitivity,`[`, "total") 
+
+total_profit = cbind.data.frame(profit_almonds, parameters)
 
 #when we vary 2 parameters we can bind them together here
 #parms = cbind.data.frame(price)
@@ -110,11 +106,9 @@ ggplot(profit_almonds_df,
   labs(x = "Profit", y = "Years")
 
 #Make scatter plots comparison
-mean_profit = cbind.data.frame(profit_almonds_df_final, parameters)
-
-p1 = ggplot(mean_profit, aes(price, mean_netprofit, col=acres))+geom_point(cex=2)+
+p1 = ggplot(total_profit, aes(price, total, col=acres))+geom_point(cex=2)+
   labs(y="Mean Annual Profits", x="Annual Price")
-p2 = ggplot(mean_profit, aes(acres, mean_netprofit, col=price))+geom_point(cex=2)+
+p2 = ggplot(total_profit, aes(acres, total, col=price))+geom_point(cex=2)+
   labs(y="Mean Annual Profits", x="Almond Acres")
 p1|p2
 ```

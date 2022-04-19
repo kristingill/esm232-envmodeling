@@ -16,10 +16,10 @@ compute_profit_almond = function(yield, year, price, discount=0.12, acres, base_
   yearprofit <- data.frame(scen=scen, yield=yield, year=year, base_almonds=base_almonds) %>% 
     mutate(total_almonds = base_almonds + yield)
   
-  yearprofit$net <-  yearprofit$total_almonds*price
+  yearprofit$net <-  yearprofit$total_almonds*price*acres
   
-  Yearprofit <- yearprofit %>% 
-    mutate(netpre = compute_NPV(value=net, time=year-year[1], discount=discount ))
+  yearprofit <- yearprofit %>% 
+    mutate(netpre = compute_NPV(value=net, time=year-year[1], discount=discount ), price = price, acres = acres)
   
-  return(yearprofit)
+  return(list(yearprofit, total = sum(yearprofit$net)))
 }
