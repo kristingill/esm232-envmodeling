@@ -99,17 +99,23 @@ total_profit = cbind.data.frame(profit_almonds, parameters)
 # Summary figures
 ```{r}
 # now we could plot
-ggplot(profit_almonds_df, 
-       aes(as.factor(year), net, group=year))+
-  geom_boxplot() +
-  theme_minimal() +
-  labs(x = "Profit", y = "Years")
+#ggplot(total_profit, 
+ #      aes(as.factor(year), net, group=year))+
+  #geom_boxplot() +
+  #theme_minimal() +
+  #labs(x = "Profit", y = "Years")
 
 #Make scatter plots comparison
-p1 = ggplot(total_profit, aes(price, total, col=acres))+geom_point(cex=2)+
-  labs(y="Mean Annual Profits", x="Annual Price")
-p2 = ggplot(total_profit, aes(acres, total, col=price))+geom_point(cex=2)+
-  labs(y="Mean Annual Profits", x="Almond Acres")
+p1 = ggplot(total_profit, aes(price, total, col=acres)) +
+  geom_point(cex=2) +
+  labs(y="Mean Annual Profits", x="Annual Price") +
+  theme_minimal()
+
+p2 = ggplot(total_profit, aes(acres, total, col=price)) +
+  geom_point(cex=2) +
+  labs(y="Mean Annual Profits", x="Almond Acres") +
+  theme_minimal()
+
 p1|p2
 ```
 
